@@ -2,14 +2,13 @@ import os
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware  # Importa el middleware de CORS
 from pydantic import BaseModel
-import bcrypt
-import mysql.connector
 from models.user import UserCreate
-from cruds import users, results, revision, role, analytic
+from cruds import RevisionService, users, results, role, analytic
 from cruds import analytic  # Asegúrate de que estás importando correctamente
 from cruds.analytic import get_all_results
 from cruds.analytic import get_results_by_client_id
-from database import create_connection, create_database, create_tables_and_insert_data
+from database import  create_database, create_tables_and_insert_data
+from models.Revision import RevisionModel
 
 app = FastAPI()
 
@@ -110,41 +109,36 @@ def delete_user(client_id: int):
     return users.delete_user(client_id)
 
 
-
-
-
-
-
-# REVISIONES
+# ----------------------------- REVISIONES ----------------
 # Listar todas las revisiones
-@app.get("/revisions/")
+@app.get("/api/revision/list")
 def read_revisions():
-    return revision.read_revisions()
-
-# Obtener una revisión por su ID
-@app.get("/revisions/{revision_id}")
-def select_revision_by_id(revision_id: int):
-    return revision.select_revision_by_id(revision_id)
+    return RevisionService.read_revisions()
 
 # Crear una nueva revisión
-@app.post("/revisions/")
-def create_revision(revision: UserCreate):
-    return revision.create_revision(revision)
+@app.post("/api/revision/save")
+def create_revision(revision: RevisionModel):
+    return RevisionService.create_revision(revision)
+
+# Obtener una revisión por su ID
+@app.get("/api/revision/get/{revision_id}")
+def select_revision_by_id(revision_id: int):
+    return RevisionService.select_revision_by_id(revision_id)
 
 # Actualizar una revisión
-@app.put("/revisions/{revision_id}")
-def update_revision(revision_id: int, revision: UserCreate):
-    return revision.update_revision(revision_id, revision)
+@app.put("/api/revision/update/{revision_id}")
+def update_revision(revision_id: int, revision: RevisionModel):
+    return RevisionService.update_revision(revision_id, revision)
 
 # Eliminar una revisión
-@app.delete("/revisions/{revision_id}")
+@app.delete("/api/revision/delete/{revision_id}")
 def delete_revision(revision_id: int):
-    return revision.delete_revision(revision_id)
+    return RevisionService.delete_revision(revision_id)
 
 # Obtener una revisión por su ID resultado
-@app.get("/revisionresult/{result_id}")
+@app.get("/api/revision/get/result/{result_id}")
 def get_revision_by_result(result_id: int):
-    return revision.get_revision_by_result(result_id)
+    return RevisionService.get_revision_by_result(result_id)
 
 # ROLES
 # Listar todos los roles
@@ -174,4 +168,4 @@ def delete_role(role_id: int):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8080)
+    uvicorn.run(app, host="127.0.0.1", port=8000)
