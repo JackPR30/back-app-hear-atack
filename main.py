@@ -8,9 +8,239 @@ from cruds import analytic  # Asegúrate de que estás importando correctamente
 from cruds.analytic import get_all_results
 from cruds.analytic import get_results_by_client_id
 from database import  create_database, create_tables_and_insert_data
-from models.Revision import RevisionModel
+from models.revision import RevisionModel
+from database import create_connection, create_database, create_tables_and_insert_data
+from fastapi import APIRouter
+from fastapi.responses import JSONResponse
 
 app = FastAPI()
+
+
+@app.get("/clients/")
+def get_clients():
+    conn = create_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT id, first_name FROM users")
+        clients = cursor.fetchall()
+        return [{"id": client[0], "name": client[1]} for client in clients]
+    except Exception as e:
+        print(f"Error fetching clients: {e}")
+        raise HTTPException(status_code=500, detail="Error fetching clients")
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.get("/clients/{client_id}/report")
+def get_client_report(client_id: int):
+    conn = create_connection()
+    cursor = conn.cursor()
+    try:
+        # Obtener el conteo de usuarios asociados con el cliente
+        cursor.execute("""
+            SELECT COUNT(*)
+            FROM users
+            WHERE client_id = ?
+        """, (client_id,))
+        user_count = cursor.fetchone()[0]
+
+        # Obtener el conteo de doctores asociados con el cliente
+        cursor.execute("""
+            SELECT COUNT(*)
+            FROM users
+            WHERE client_id = ? AND role_id = (SELECT id FROM roles WHERE name = 'medico')
+        """, (client_id,))
+        doctor_count = cursor.fetchone()[0]
+
+        # Obtener el conteo de pacientes detectados asociados con el cliente
+        cursor.execute("""
+            SELECT COUNT(*)
+            FROM results
+            JOIN users ON results.user_id = users.id
+            WHERE users.client_id = ? AND results.HeartDisease = 1
+        """, (client_id,))
+        patients_detected = cursor.fetchone()[0]
+
+        return {
+            "userCount": user_count,
+            "doctorCount": doctor_count,
+            "patientsDetected": patients_detected,
+        }
+    except Exception as e:
+        print(f"Error fetching client report: {e}")
+        raise HTTPException(status_code=500, detail="Error fetching client report")
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.get("/users/count")
+def get_user_count():
+    conn = create_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT COUNT(*) FROM users")
+        result = cursor.fetchone()
+        return result[0]
+    except Exception as e:
+        print(f"Error fetching user count: {e}")
+        raise HTTPException(status_code=500, detail="Error fetching user count")
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.get("/doctors/count")
+def get_doctor_count():
+    conn = create_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT COUNT(*) FROM users WHERE role_id = (SELECT id FROM roles WHERE name = 'medico')")
+        result = cursor.fetchone()
+        return result[0]
+    except Exception as e:
+        print(f"Error fetching doctor count: {e}")
+        raise HTTPException(status_code=500, detail="Error fetching doctor count")
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.get("/patients/detected/count")
+def get_patients_detected_count():
+    conn = create_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT COUNT(*) FROM results WHERE HeartDisease = 1")
+        result = cursor.fetchone()
+        return result[0]
+    except Exception as e:
+        print(f"Error fetching detected patients count: {e}")
+        raise HTTPException(status_code=500, detail="Error fetching detected patients count")
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_diagnosis_accuracy_rate():
+    conn = create_connection()
+    cursor = conn.cursor()
+    query = '''
+    SELECT ((SELECT COUNT(RD.id) 
+             FROM results RD
+             INNER JOIN revision R ON R.results_id = RD.id
+             WHERE diagnosis = "CORRECTO") / 
+            (SELECT COUNT(RD.id) 
+             FROM results RD
+             INNER JOIN revision R ON R.results_id = RD.id)) * 100;
+    '''
+    try:
+        cursor.execute(query)
+        result = cursor.fetchone()
+        return result[0] if result and result[0] is not None else 0
+    except Exception as e:
+        print(f"Error executing query: {e}")
+        return 0
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_severe_case_reduction_rate():
+    conn = create_connection()
+    cursor = conn.cursor()
+    query = '''
+    SELECT (((SELECT COUNT(id)
+             FROM (
+                SELECT id, ROW_NUMBER() OVER (ORDER BY date_created ASC) AS orden
+                FROM revision
+                WHERE patient_status = "GRAVE"
+             ) AS sq
+             WHERE orden <= (SELECT COUNT(*) * 0.5 FROM revision)) - 
+             (SELECT COUNT(id)
+             FROM (
+                SELECT id, ROW_NUMBER() OVER (ORDER BY date_created DESC) AS orden
+                FROM revision
+                WHERE patient_status = "GRAVE"
+             ) AS sq
+             WHERE orden <= (SELECT COUNT(*) * 0.5 FROM revision))) / 
+            (SELECT COUNT(id)
+             FROM (
+                SELECT id, ROW_NUMBER() OVER (ORDER BY date_created ASC) AS orden
+                FROM revision
+                WHERE patient_status = "GRAVE"
+             ) AS sq
+             WHERE orden <= (SELECT COUNT(*) * 0.5 FROM revision))) * 100;
+    '''
+    try:
+        cursor.execute(query)
+        result = cursor.fetchone()
+        return result[0] if result and result[0] is not None else 0
+    except Exception as e:
+        print(f"Error executing query: {e}")
+        return 0
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_diagnosis_time_reduction_rate():
+    conn = create_connection()
+    cursor = conn.cursor()
+    query = '''
+    SELECT (((SELECT AVG(TIMESTAMPDIFF(SECOND, start_time, end_time)) 
+             FROM revision 
+             ORDER BY date_created DESC LIMIT 10) -
+            (SELECT AVG(TIMESTAMPDIFF(SECOND, start_time, end_time)) 
+             FROM revision)) / 
+            (SELECT AVG(TIMESTAMPDIFF(SECOND, start_time, end_time)) 
+             FROM revision)) * 100;
+    '''
+    try:
+        cursor.execute(query)
+        result = cursor.fetchone()
+        return result[0] if result and result[0] is not None else 0
+    except Exception as e:
+        print(f"Error executing query: {e}")
+        return 0
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_kpi_emoji(kpi_value, kpi_number):
+    if kpi_number == 1:
+        if kpi_value > 60:
+            return "🟢"
+        elif 40 <= kpi_value <= 60:
+            return "🟡"
+        else:
+            return "🔴"
+    elif kpi_number == 2:
+        if kpi_value > 50:
+            return "🟢"
+        elif 20 <= kpi_value <= 50:
+            return "🟡"
+        else:
+            return "🔴"
+    elif kpi_number == 3:
+        if kpi_value >= 60:
+            return "🟢"
+        elif 20 <= kpi_value < 60:
+            return "🟡"
+        else:
+            return "🔴"
+
+@app.get("/kpi/diagnosis-accuracy-rate/")
+def diagnosis_accuracy_rate():
+    kpi_value = get_diagnosis_accuracy_rate()
+    emoji = get_kpi_emoji(kpi_value, 1)
+    return kpi_value
+
+@app.get("/kpi/severe-case-reduction-rate/")
+def severe_case_reduction_rate():
+    kpi_value = get_severe_case_reduction_rate()
+    emoji = get_kpi_emoji(kpi_value, 2)
+    return kpi_value
+
+@app.get("/kpi/diagnosis-time-reduction-rate/")
+def diagnosis_time_reduction_rate():
+    kpi_value = get_diagnosis_time_reduction_rate()
+    emoji = get_kpi_emoji(kpi_value, 3)
+    return kpi_value
 
 # Configurar CORS
 app.add_middleware(
