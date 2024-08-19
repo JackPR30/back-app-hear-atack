@@ -15,6 +15,109 @@ from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
+
+@app.get("/clients/")
+def get_clients():
+    conn = create_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT id, first_name FROM users")
+        clients = cursor.fetchall()
+        return [{"id": client[0], "name": client[1]} for client in clients]
+    except Exception as e:
+        print(f"Error fetching clients: {e}")
+        raise HTTPException(status_code=500, detail="Error fetching clients")
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.get("/clients/{client_id}/report")
+def get_client_report(client_id: int):
+    conn = create_connection()
+    cursor = conn.cursor()
+    try:
+        # Obtener el conteo de usuarios asociados con el cliente
+        cursor.execute("""
+            SELECT COUNT(*)
+            FROM users
+            WHERE client_id = ?
+        """, (client_id,))
+        user_count = cursor.fetchone()[0]
+
+        # Obtener el conteo de doctores asociados con el cliente
+        cursor.execute("""
+            SELECT COUNT(*)
+            FROM users
+            WHERE client_id = ? AND role_id = (SELECT id FROM roles WHERE name = 'medico')
+        """, (client_id,))
+        doctor_count = cursor.fetchone()[0]
+
+        # Obtener el conteo de pacientes detectados asociados con el cliente
+        cursor.execute("""
+            SELECT COUNT(*)
+            FROM results
+            JOIN users ON results.user_id = users.id
+            WHERE users.client_id = ? AND results.HeartDisease = 1
+        """, (client_id,))
+        patients_detected = cursor.fetchone()[0]
+
+        return {
+            "userCount": user_count,
+            "doctorCount": doctor_count,
+            "patientsDetected": patients_detected,
+        }
+    except Exception as e:
+        print(f"Error fetching client report: {e}")
+        raise HTTPException(status_code=500, detail="Error fetching client report")
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.get("/users/count")
+def get_user_count():
+    conn = create_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT COUNT(*) FROM users")
+        result = cursor.fetchone()
+        return result[0]
+    except Exception as e:
+        print(f"Error fetching user count: {e}")
+        raise HTTPException(status_code=500, detail="Error fetching user count")
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.get("/doctors/count")
+def get_doctor_count():
+    conn = create_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT COUNT(*) FROM users WHERE role_id = (SELECT id FROM roles WHERE name = 'medico')")
+        result = cursor.fetchone()
+        return result[0]
+    except Exception as e:
+        print(f"Error fetching doctor count: {e}")
+        raise HTTPException(status_code=500, detail="Error fetching doctor count")
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.get("/patients/detected/count")
+def get_patients_detected_count():
+    conn = create_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT COUNT(*) FROM results WHERE HeartDisease = 1")
+        result = cursor.fetchone()
+        return result[0]
+    except Exception as e:
+        print(f"Error fetching detected patients count: {e}")
+        raise HTTPException(status_code=500, detail="Error fetching detected patients count")
+    finally:
+        cursor.close()
+        conn.close()
+
 def get_diagnosis_accuracy_rate():
     conn = create_connection()
     cursor = conn.cursor()

@@ -2,7 +2,7 @@ import os
 from fastapi import HTTPException
 import mysql.connector
 from database import create_connection
-from models.Revision import RevisionModel
+from models.revision import RevisionModel
 
 def create_revision(revision: RevisionModel):
     conn = create_connection()
