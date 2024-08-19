@@ -17,7 +17,8 @@ def create_connection():
     conn = mysql.connector.connect(
         host=host,
         user=user,
-        password=password
+        password=password,
+        database=database
     )
     return conn
 
@@ -38,20 +39,20 @@ def create_tables_and_insert_data():
     # Crear tabla de roles
     cursor.execute('''CREATE TABLE IF NOT EXISTS roles (
                         id INT AUTO_INCREMENT PRIMARY KEY,
-                        name VARCHAR(255) NOT NULL UNIQUE
+                        name VARCHAR(191) NOT NULL UNIQUE
                     )''')
 
     # Crear tabla de clientes (usuarios)
     cursor.execute('''CREATE TABLE IF NOT EXISTS users (
                         id INT AUTO_INCREMENT PRIMARY KEY,
-                        first_name VARCHAR(255),
-                        last_name VARCHAR(255),
+                        first_name VARCHAR(191),
+                        last_name VARCHAR(191),
                         DNI VARCHAR(8),
                         age INT,
                         sex CHAR(1),
-                        username VARCHAR(255) NOT NULL UNIQUE,
-                        email VARCHAR(255) NOT NULL UNIQUE,
-                        password VARCHAR(255) NOT NULL,
+                        username VARCHAR(191) NOT NULL UNIQUE,
+                        email VARCHAR(191) NOT NULL UNIQUE,
+                        password VARCHAR(191) NOT NULL,
                         role_id INT,
                         date_created DATETIME,
                         FOREIGN KEY (role_id) REFERENCES roles(id)

@@ -7,10 +7,140 @@ from cruds import RevisionService, users, results, role, analytic
 from cruds import analytic  # Asegúrate de que estás importando correctamente
 from cruds.analytic import get_all_results
 from cruds.analytic import get_results_by_client_id
+<<<<<<< Updated upstream
 from database import  create_database, create_tables_and_insert_data
 from models.Revision import RevisionModel
+=======
+from database import create_connection, create_database, create_tables_and_insert_data
+from fastapi import APIRouter
+from fastapi.responses import JSONResponse
+>>>>>>> Stashed changes
 
 app = FastAPI()
+
+def get_diagnosis_accuracy_rate():
+    conn = create_connection()
+    cursor = conn.cursor()
+    query = '''
+    SELECT ((SELECT COUNT(RD.id) 
+             FROM results RD
+             INNER JOIN revision R ON R.results_id = RD.id
+             WHERE diagnosis = "CORRECTO") / 
+            (SELECT COUNT(RD.id) 
+             FROM results RD
+             INNER JOIN revision R ON R.results_id = RD.id)) * 100;
+    '''
+    try:
+        cursor.execute(query)
+        result = cursor.fetchone()
+        return result[0] if result and result[0] is not None else 0
+    except Exception as e:
+        print(f"Error executing query: {e}")
+        return 0
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_severe_case_reduction_rate():
+    conn = create_connection()
+    cursor = conn.cursor()
+    query = '''
+    SELECT (((SELECT COUNT(id)
+             FROM (
+                SELECT id, ROW_NUMBER() OVER (ORDER BY date_created ASC) AS orden
+                FROM revision
+                WHERE patient_status = "GRAVE"
+             ) AS sq
+             WHERE orden <= (SELECT COUNT(*) * 0.5 FROM revision)) - 
+             (SELECT COUNT(id)
+             FROM (
+                SELECT id, ROW_NUMBER() OVER (ORDER BY date_created DESC) AS orden
+                FROM revision
+                WHERE patient_status = "GRAVE"
+             ) AS sq
+             WHERE orden <= (SELECT COUNT(*) * 0.5 FROM revision))) / 
+            (SELECT COUNT(id)
+             FROM (
+                SELECT id, ROW_NUMBER() OVER (ORDER BY date_created ASC) AS orden
+                FROM revision
+                WHERE patient_status = "GRAVE"
+             ) AS sq
+             WHERE orden <= (SELECT COUNT(*) * 0.5 FROM revision))) * 100;
+    '''
+    try:
+        cursor.execute(query)
+        result = cursor.fetchone()
+        return result[0] if result and result[0] is not None else 0
+    except Exception as e:
+        print(f"Error executing query: {e}")
+        return 0
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_diagnosis_time_reduction_rate():
+    conn = create_connection()
+    cursor = conn.cursor()
+    query = '''
+    SELECT (((SELECT AVG(TIMESTAMPDIFF(SECOND, start_time, end_time)) 
+             FROM revision 
+             ORDER BY date_created DESC LIMIT 10) -
+            (SELECT AVG(TIMESTAMPDIFF(SECOND, start_time, end_time)) 
+             FROM revision)) / 
+            (SELECT AVG(TIMESTAMPDIFF(SECOND, start_time, end_time)) 
+             FROM revision)) * 100;
+    '''
+    try:
+        cursor.execute(query)
+        result = cursor.fetchone()
+        return result[0] if result and result[0] is not None else 0
+    except Exception as e:
+        print(f"Error executing query: {e}")
+        return 0
+    finally:
+        cursor.close()
+        conn.close()
+
+def get_kpi_emoji(kpi_value, kpi_number):
+    if kpi_number == 1:
+        if kpi_value > 60:
+            return "🟢"
+        elif 40 <= kpi_value <= 60:
+            return "🟡"
+        else:
+            return "🔴"
+    elif kpi_number == 2:
+        if kpi_value > 50:
+            return "🟢"
+        elif 20 <= kpi_value <= 50:
+            return "🟡"
+        else:
+            return "🔴"
+    elif kpi_number == 3:
+        if kpi_value >= 60:
+            return "🟢"
+        elif 20 <= kpi_value < 60:
+            return "🟡"
+        else:
+            return "🔴"
+
+@app.get("/kpi/diagnosis-accuracy-rate/")
+def diagnosis_accuracy_rate():
+    kpi_value = get_diagnosis_accuracy_rate()
+    emoji = get_kpi_emoji(kpi_value, 1)
+    return kpi_value
+
+@app.get("/kpi/severe-case-reduction-rate/")
+def severe_case_reduction_rate():
+    kpi_value = get_severe_case_reduction_rate()
+    emoji = get_kpi_emoji(kpi_value, 2)
+    return kpi_value
+
+@app.get("/kpi/diagnosis-time-reduction-rate/")
+def diagnosis_time_reduction_rate():
+    kpi_value = get_diagnosis_time_reduction_rate()
+    emoji = get_kpi_emoji(kpi_value, 3)
+    return kpi_value
 
 # Configurar CORS
 app.add_middleware(
