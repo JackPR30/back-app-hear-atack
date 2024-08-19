@@ -7,14 +7,11 @@ from cruds import RevisionService, users, results, role, analytic
 from cruds import analytic  # Asegúrate de que estás importando correctamente
 from cruds.analytic import get_all_results
 from cruds.analytic import get_results_by_client_id
-<<<<<<< Updated upstream
 from database import  create_database, create_tables_and_insert_data
-from models.Revision import RevisionModel
-=======
+from models.revision import RevisionModel
 from database import create_connection, create_database, create_tables_and_insert_data
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
->>>>>>> Stashed changes
 
 app = FastAPI()
 
