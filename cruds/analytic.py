@@ -81,7 +81,7 @@ def unified_predict(input_data: InputData):
         # Construir la respuesta en formato JSON
         respuesta = {
             "riesgo": riesgo_mensaje,
-            "impacto": impacto_mensaje,
+            "impacto": dict(zip(impacto_df['Feature'], impacto_df['Impact'])),
             "diagnostico": diagnostico_mensaje
         }
         

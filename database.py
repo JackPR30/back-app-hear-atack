@@ -128,3 +128,4 @@ if __name__ == "__main__":
     create_database()
     create_tables_and_insert_data()
     print("Tablas creadas y datos iniciales insertados correctamente.")
+    

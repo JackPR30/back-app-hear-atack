@@ -6,6 +6,7 @@ from models.user import UserCreate
 from cruds import RevisionService, users, results, role, analytic
 from cruds import analytic  # Asegúrate de que estás importando correctamente
 from cruds.analytic import get_all_results
+from cruds.analytic import unified_predict
 from cruds.analytic import get_results_by_client_id
 from database import  create_database, create_tables_and_insert_data
 from models.revision import RevisionModel
@@ -405,4 +406,4 @@ def delete_role(role_id: int):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8080)
