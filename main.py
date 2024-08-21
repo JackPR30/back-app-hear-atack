@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware  # Importa el middleware de C
 from pydantic import BaseModel
 from models.user import UserCreate
 from cruds import RevisionService, users, results, role, analytic
-from cruds import analytic  # Asegúrate de que estás importando correctamente
+from cruds.RevisionService import get_revision_by_result_id
 from cruds.analytic import get_all_results
 from cruds.analytic import unified_predict
 from cruds.analytic import get_results_by_client_id
@@ -15,6 +15,7 @@ from models.revision import RevisionModel
 from database import create_connection, create_database, create_tables_and_insert_data
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
+from typing import Optional
 
 app = FastAPI()
 
@@ -376,6 +377,13 @@ def create_revision(revision: RevisionModel):
 @app.get("/api/revision/get/{revision_id}")
 def select_revision_by_id(revision_id: int):
     return RevisionService.select_revision_by_id(revision_id)
+
+@app.get("/api/revision/by_result_id/{results_id}")
+def get_revision(results_id: int):
+    revision = get_revision_by_result_id(results_id)
+    if revision is None:
+        raise HTTPException(status_code=404, detail="Revision not found")
+    return revision
 
 # Actualizar una revisión
 @app.put("/api/revision/update/{revision_id}")

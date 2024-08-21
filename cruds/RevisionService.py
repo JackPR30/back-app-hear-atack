@@ -3,6 +3,8 @@ from fastapi import HTTPException
 import mysql.connector
 from database import create_connection
 from models.revision import RevisionModel
+from typing import Optional
+from datetime import datetime, time
 
 def create_revision(revision: RevisionModel):
     conn = create_connection()
@@ -47,6 +49,16 @@ def select_revision_by_id(revision_id: int):
     if revision is None:
         raise HTTPException(status_code=404, detail="Revision not found")
 
+    return revision
+
+def get_revision_by_result_id(results_id: int) -> Optional[dict]:
+    conn = create_connection()
+    conn.database = os.getenv("DB_NAME")
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT * FROM revision WHERE results_id = %s", (results_id,))
+    revision = cursor.fetchone()
+    conn.close()
     return revision
 
 def update_revision(revision_id: int, revision: RevisionModel):
