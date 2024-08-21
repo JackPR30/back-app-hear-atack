@@ -6,6 +6,7 @@ from models.user import UserCreate
 from cruds import RevisionService, users, results, role, analytic
 from cruds import analytic  # Asegúrate de que estás importando correctamente
 from cruds.analytic import get_all_results
+from cruds.analytic import unified_predict
 from cruds.analytic import get_results_by_client_id
 from database import  create_database, create_tables_and_insert_data
 from models.revision import RevisionModel
@@ -21,7 +22,7 @@ def get_clients():
     conn = create_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("SELECT id, first_name FROM users")
+        cursor.execute("SELECT id, CONCAT(first_name, ' ', last_name, ' - DNI: ', DNI) FROM users WHERE role_id = (SELECT id FROM roles WHERE name = 'paciente')")
         clients = cursor.fetchall()
         return [{"id": client[0], "name": client[1]} for client in clients]
     except Exception as e:
@@ -36,35 +37,42 @@ def get_client_report(client_id: int):
     conn = create_connection()
     cursor = conn.cursor()
     try:
-        # Obtener el conteo de usuarios asociados con el cliente
-        cursor.execute("""
-            SELECT COUNT(*)
-            FROM users
-            WHERE client_id = ?
-        """, (client_id,))
-        user_count = cursor.fetchone()[0]
-
-        # Obtener el conteo de doctores asociados con el cliente
-        cursor.execute("""
-            SELECT COUNT(*)
-            FROM users
-            WHERE client_id = ? AND role_id = (SELECT id FROM roles WHERE name = 'medico')
-        """, (client_id,))
-        doctor_count = cursor.fetchone()[0]
-
-        # Obtener el conteo de pacientes detectados asociados con el cliente
+        # Obtener el número total de análisis realizados para el cliente
         cursor.execute("""
             SELECT COUNT(*)
             FROM results
-            JOIN users ON results.user_id = users.id
-            WHERE users.client_id = ? AND results.HeartDisease = 1
+            WHERE client_id = %s
         """, (client_id,))
-        patients_detected = cursor.fetchone()[0]
+        total_analyses = cursor.fetchone()[0]
+
+        # Obtener el número de análisis positivos (HeartDisease = 1)
+        cursor.execute("""
+            SELECT COUNT(*)
+            FROM results
+            WHERE client_id = %s AND HeartDisease = 1
+        """, (client_id,))
+        positive_analyses = cursor.fetchone()[0]
+
+        # Obtener datos históricos para gráficos
+        cursor.execute("""
+            SELECT dateRegistration, BMI, MentalHealthDays, PhysicalHealthDays 
+            FROM results
+            WHERE client_id = %s
+            ORDER BY dateRegistration ASC
+        """, (client_id,))
+        history_data = cursor.fetchall()
+
+        history = {
+            "dates": [row[0] for row in history_data],
+            "bmi": [row[1] for row in history_data],
+            "mentalHealthDays": [row[2] for row in history_data],
+            "physicalHealthDays": [row[3] for row in history_data],
+        }
 
         return {
-            "userCount": user_count,
-            "doctorCount": doctor_count,
-            "patientsDetected": patients_detected,
+            "totalAnalyses": total_analyses,
+            "positiveAnalyses": positive_analyses,
+            "history": history,
         }
     except Exception as e:
         print(f"Error fetching client report: {e}")
@@ -398,4 +406,4 @@ def delete_role(role_id: int):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8080)
