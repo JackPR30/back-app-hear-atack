@@ -8,6 +8,8 @@ from cruds import analytic  # Asegúrate de que estás importando correctamente
 from cruds.analytic import get_all_results
 from cruds.analytic import unified_predict
 from cruds.analytic import get_results_by_client_id
+from cruds.analytic import update_predict
+from cruds.analytic import delete_result
 from database import  create_database, create_tables_and_insert_data
 from models.revision import RevisionModel
 from database import create_connection, create_database, create_tables_and_insert_data
@@ -304,6 +306,18 @@ def get_all_results_route():
 @app.get("/results/{client_id}")
 def get_results_by_client_id_route(client_id: int):
     return get_results_by_client_id(client_id)
+
+
+# Ruta para actualizar un resultado por client_id
+@app.put("/predict/{id}")
+def update_predict_route(id: int, updated_data: InputData):
+    return update_predict(id, updated_data)
+
+
+# Ruta para eliminar un resultado por id
+@app.delete("/results/{id}")
+def delete_result_route(id: int):
+    return delete_result(id)
 
 
 # Iniciar sesión de usuario
