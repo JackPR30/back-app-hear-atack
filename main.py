@@ -426,6 +426,10 @@ def update_role(role_id: int, role: UserCreate):
 def delete_role(role_id: int):
     return role.delete_role(role_id)
 
+@app.get("/historial/{client_id}")
+def get_historial(client_id: int):
+    return results.read_results_byName(client_id)
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8080)

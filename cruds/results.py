@@ -95,3 +95,40 @@ def delete_result(result_id: int):
         conn.close()
 
     return {"message": "Result deleted successfully"}
+
+
+SEX = {1: 'Male', 2: 'Female'}
+GEN_HEALTH = {1: "Excellent", 2: "Very good", 3: "Good", 4: "Fair", 5: "Poor"}
+DIABETES = {1: "Yes", 2: "Yes, but only during pregnancy (female)", 3: "No", 4: "No, pre-diabetes or borderline diabetes"}
+SMOKER_STATUS = {1: "Current smoker - now smokes every day", 2: "Current smoker - now smokes some days", 3: "Former smoker", 4: "Never smoked"}
+RACE = {1: "White only, Non-Hispanic", 2: "Black only, Non-Hispanic", 3: "Other race only, Non-Hispanic", 4: "Multiracial, Non-Hispanic", 5: "Hispanic"}
+AGE_CATEGORY = {1: "Age 18 to 24", 2: "Age 25 to 29", 3: "Age 30 to 34", 4: "Age 35 to 39", 5: "Age 40 to 44", 6: "Age 45 to 49", 7: "Age 50 to 54", 8: "Age 55 to 59", 9: "Age 60 to 64", 10: "Age 65 to 69", 11: "Age 70 to 74", 12: "Age 75 to 79", 13: "Age 80 or older"}
+
+def read_results_byName(client_id: int):
+    conn = create_connection()
+    conn.database = os.getenv("DB_NAME")
+    cursor = conn.cursor(dictionary=True)
+
+    query = "SELECT * FROM results LEFT JOIN revision ON results.id = revision.results_id WHERE results.client_id = %s"
+    cursor.execute(query, (client_id,))
+    
+    results = cursor.fetchall()
+    conn.close()
+
+    # Convertir los valores numéricos a sus representaciones de texto y reemplazarlos
+    for result in results:
+        result['HeartDisease'] = 'Sí' if result.get('HeartDisease') == 1 else 'No'
+        result['Sex'] = SEX.get(result.get('Sex'), 'Unknown')
+        result['GeneralHealth'] = GEN_HEALTH.get(result.get('GeneralHealth'), 'Unknown')
+        result['PhysicalActivities'] = 'Sí' if result.get('PhysicalActivities') == 1 else 'No'
+        result['HadStroke'] = 'Sí' if result.get('HadStroke') == 1 else 'No'
+        result['HadKidneyDisease'] = 'Sí' if result.get('HadKidneyDisease') == 1 else 'No'
+        result['HadDiabetes'] = DIABETES.get(result.get('HadDiabetes'), 'Unknown')
+        result['DifficultyWalking'] = 'Sí' if result.get('DifficultyWalking') == 1 else 'No'
+        result['SmokerStatus'] = SMOKER_STATUS.get(result.get('SmokerStatus'), 'Unknown')
+        result['RaceEthnicityCategory'] = RACE.get(result.get('RaceEthnicityCategory'), 'Unknown')
+        result['AgeCategory'] = AGE_CATEGORY.get(result.get('AgeCategory'), 'Unknown')
+        result['AlcoholDrinkers'] = 'Sí' if result.get('AlcoholDrinkers') == 1 else 'No'
+        result['HadHighBloodCholesterol'] = 'Sí' if result.get('HadHighBloodCholesterol') == 1 else 'No'
+    
+    return results
