@@ -3,11 +3,12 @@ from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware  # Importa el middleware de CORS
 from pydantic import BaseModel
 from models.user import UserCreate
-from cruds import RevisionService, users, results, role, analytic
+from cruds import RevisionService, users, results, role
 from cruds.RevisionService import get_revision_by_result_id
 from cruds.analytic import get_all_results
 from cruds.analytic import unified_predict
 from cruds.analytic import get_results_by_client_id
+from cruds.results import read_results_with_state_revision_service
 from cruds.analytic import update_predict
 from cruds.analytic import delete_result
 from database import  create_database, create_tables_and_insert_data
@@ -16,6 +17,7 @@ from database import create_connection, create_database, create_tables_and_inser
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from typing import Optional
+
 
 app = FastAPI()
 
@@ -304,10 +306,14 @@ def get_all_results_route():
     return get_all_results()
 
 # Ruta para obtener resultados por client_id
+@app.get("/results/with_state_revision/{client_id}")
+def get_results_with_state_result_route(client_id: int):
+    return read_results_with_state_revision_service(client_id)
+
+# Ruta para obtener resultados por client_id
 @app.get("/results/{client_id}")
 def get_results_by_client_id_route(client_id: int):
     return get_results_by_client_id(client_id)
-
 
 # Ruta para actualizar un resultado por client_id
 @app.put("/predict/{id}")

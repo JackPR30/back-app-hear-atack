@@ -40,6 +40,31 @@ def read_results():
 
     return results
 
+def read_results_with_state_revision_service(client_id: int):
+    conn = create_connection()
+    conn.database = os.getenv("DB_NAME")
+    cursor = conn.cursor(dictionary=True)
+
+    query = '''
+        SELECT 
+            r.*,
+            IF(rv.id IS NULL, 0, 1) AS status_revision
+        FROM 
+            results r
+        LEFT JOIN 
+            revision rv 
+        ON 
+            r.id = rv.results_id
+        WHERE 
+            r.client_id = %s
+    '''
+    cursor.execute(query,(client_id,))
+    results = cursor.fetchall()
+    conn.close()
+
+    return results
+
+
 def select_result_by_id(result_id: int):
     conn = create_connection()
     conn.database = os.getenv("DB_NAME")
