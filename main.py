@@ -19,7 +19,6 @@ from typing import Optional
 
 app = FastAPI()
 
-
 @app.get("/clients/")
 def get_clients():
     conn = create_connection()
