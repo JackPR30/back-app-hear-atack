@@ -341,9 +341,9 @@ def read_users():
     return users.read_users()
 
 #listar clientes
-@app.get("/clients/")
-def read_users():
-    return users.read_clients()
+@app.get("/users/role/{user_id}")
+def read_usersByRole(user_id: int):
+    return users.read_usersByIdRole(user_id)
 
 # Obtener un user por su ID
 @app.get("/users/{client_id}")

@@ -35,12 +35,12 @@ def read_users():
 
     return users
 
-def read_clients():
+def read_usersByIdRole(role_id:int):
     conn = create_connection()
     conn.database = os.getenv("DB_NAME")
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM users WHERE role_id = 3")
+    cursor.execute("SELECT * FROM users WHERE role_id = %s", (role_id,))
     users = cursor.fetchall()
     conn.close()
 
