@@ -21,7 +21,6 @@ from typing import Optional
 
 app = FastAPI()
 
-
 @app.get("/clients/")
 def get_clients():
     conn = create_connection()
@@ -348,9 +347,9 @@ def read_users():
     return users.read_users()
 
 #listar clientes
-@app.get("/clients/")
-def read_users():
-    return users.read_clients()
+@app.get("/users/role/{user_id}")
+def read_usersByRole(user_id: int):
+    return users.read_usersByIdRole(user_id)
 
 # Obtener un user por su ID
 @app.get("/users/{client_id}")
@@ -438,4 +437,4 @@ def get_historial(client_id: int):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8080)
+    uvicorn.run(app, host="127.0.0.1", port=8000)
