@@ -4,9 +4,9 @@ services:
   app:
     build: .  # Construye la imagen usando el Dockerfile en el directorio actual
     depends_on:
-      - mariadb
+      - mysql
     environment:
-      DB_HOST: mariadb
+      DB_HOST: mysql
       DB_PORT: 3306
       DB_DATABASE: demo
       DB_USERNAME: root
@@ -15,8 +15,8 @@ services:
       - "8000:8000"  # Asume que tu aplicación corre en el puerto 8000
     restart: always
 
-  mariadb:
-    image: mariadb:latest
+  mysql:
+    image: mysql:latest
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: demo
@@ -29,6 +29,6 @@ services:
     ports:
       - "9001:80"
     environment:
-      PMA_HOST: mariadb
+      PMA_HOST: mysql
       MYSQL_ROOT_PASSWORD: root
     restart: always
