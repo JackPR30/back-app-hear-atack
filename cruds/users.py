@@ -65,7 +65,7 @@ def update_user(client_id: int, user: UserCreate):
     conn.database = os.getenv("DB_NAME")
     cursor = conn.cursor()
 
-    hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt()).decode()
+    #hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt()).decode()
 
     try:
         cursor.execute('''UPDATE users SET first_name = %s, last_name = %s, DNI = %s, age = %s, sex = %s,
