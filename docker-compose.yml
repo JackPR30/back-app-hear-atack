@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   app:
-    build: .  # Construye la imagen usando el Dockerfile en el directorio actual
+    build: ./  # Construye la imagen usando el Dockerfile en el directorio actual
     depends_on:
       - mysql
     environment:
