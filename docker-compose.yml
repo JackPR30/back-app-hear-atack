@@ -12,8 +12,19 @@ services:
       DB_USERNAME: root
       DB_PASSWORD: root
     ports:
-      - "8000:8000"  # Asume que tu aplicación corre en el puerto 8000
+      - "8000:8000"  # Exponer el puerto 8000 del contenedor al host
     restart: always
+    command: >
+      /bin/bash -c "
+      # Espera a que la aplicación esté completamente cargada
+      while ! curl -s http://localhost:8000 > /dev/null; do
+        echo 'Esperando que la aplicación esté disponible...';
+        sleep 5;
+      done;
+      echo 'Aplicación cargada, ejecutando el script Python...';
+      python3 /app/database.py;
+      exec uvicorn main:app --host 0.0.0.0 --port 8000
+      "
 
   mysql:
     image: mysql:latest
