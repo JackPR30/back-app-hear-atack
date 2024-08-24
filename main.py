@@ -361,6 +361,10 @@ def select_user_by_id(client_id: int):
 def update_user(client_id: int, user: UserCreate):
     return users.update_user(client_id, user)
 
+@app.put("/usersPassword/{client_id}")
+def update_user(client_id: int, user: UserCreate):
+    return users.update_user2(client_id, user)
+
 # Eliminar un user
 @app.delete("/users/{client_id}")
 def delete_user(client_id: int):
