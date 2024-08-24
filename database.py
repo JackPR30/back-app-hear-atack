@@ -114,7 +114,7 @@ def create_tables_and_insert_data():
 
     # Insertar usuario administrador por defecto si no existe
     cursor.execute('''INSERT INTO users (first_name, last_name, DNI, age, sex, phone, username, email, password, role_id, date_created) 
-                      SELECT 'Ricardo', 'Mendoza', '78945612', 50, 'M', '987654321', 'admin', 'admin@gmail.com', %s, 
+                      SELECT 'Ricardo', 'Mendoza', '+5178945612', 50, 'M', '987654321', 'admin', 'admin@gmail.com', %s, 
                       (SELECT id FROM roles WHERE name = 'admin'), NOW()
                       WHERE NOT EXISTS (
                           SELECT username FROM users WHERE username = 'admin'
