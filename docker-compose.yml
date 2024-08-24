@@ -20,8 +20,6 @@ services:
       while ! curl -s http://localhost:8000 > /dev/null; do
         echo 'Esperando que la aplicación esté disponible...';
         sleep 5;
-      done;
-      echo 'Aplicación cargada, ejecutando el script Python...';
       python3 /app/database.py;
       exec uvicorn main:app --host 0.0.0.0 --port 8000
       "
