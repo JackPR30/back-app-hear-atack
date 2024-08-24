@@ -6,6 +6,7 @@ class UserCreate(BaseModel):
     DNI: str
     age: int
     sex: str
+    phone: str
     username: str
     email: str
     password: str

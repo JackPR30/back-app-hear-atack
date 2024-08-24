@@ -50,6 +50,7 @@ def create_tables_and_insert_data():
                         DNI VARCHAR(8),
                         age INT,
                         sex CHAR(1),
+                        phone VARCHAR(12) NOT NULL,
                         username VARCHAR(191) NOT NULL UNIQUE,
                         email VARCHAR(191) NOT NULL UNIQUE,
                         password VARCHAR(191) NOT NULL,
@@ -112,8 +113,8 @@ def create_tables_and_insert_data():
     password_hash = bcrypt.hashpw(password_plain.encode(), bcrypt.gensalt()).decode()
 
     # Insertar usuario administrador por defecto si no existe
-    cursor.execute('''INSERT INTO users (first_name, last_name, DNI, age, sex, username, email, password, role_id, date_created) 
-                      SELECT 'Ricardo', 'Mendoza', '78945612', 50, 'M', 'admin', 'admin@gmail.com', %s, 
+    cursor.execute('''INSERT INTO users (first_name, last_name, DNI, age, sex, phone, username, email, password, role_id, date_created) 
+                      SELECT 'Ricardo', 'Mendoza', '78945612', 50, 'M', '987654321', 'admin', 'admin@gmail.com', %s, 
                       (SELECT id FROM roles WHERE name = 'admin'), NOW()
                       WHERE NOT EXISTS (
                           SELECT username FROM users WHERE username = 'admin'

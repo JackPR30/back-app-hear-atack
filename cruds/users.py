@@ -68,10 +68,10 @@ def update_user(client_id: int, user: UserCreate):
     #hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt()).decode()
 
     try:
-        cursor.execute('''UPDATE users SET first_name = %s, last_name = %s, DNI = %s, age = %s, sex = %s,
+        cursor.execute('''UPDATE users SET first_name = %s, last_name = %s, DNI = %s, age = %s, sex = %s, phone = %s,
                           username = %s, email = %s, password = %s, role_id = %s 
                           WHERE id = %s''',
-                       (user.first_name, user.last_name, user.DNI, user.age, user.sex, user.username, user.email, hashed_password, user.role_id, client_id))
+                       (user.first_name, user.last_name, user.DNI, user.age, user.sex, user.phone, user.username, user.email, hashed_password, user.role_id, client_id))
         conn.commit()
     except mysql.connector.Error as err:
         conn.rollback()
