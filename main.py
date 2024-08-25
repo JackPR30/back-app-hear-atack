@@ -441,4 +441,6 @@ def get_historial(client_id: int):
 
 if __name__ == "__main__":
     import uvicorn
+    ssl_keyfile="key.pem",
+    ssl_certfile="cert.pem"
     uvicorn.run(app, host="127.0.0.1", port=8000)
