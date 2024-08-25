@@ -8,7 +8,7 @@ services:
       DB_PORT: 10500
       DB_DATABASE: bd_bussiness_app
       DB_USERNAME: root
-      DB_PASSWORD: "YACAIMOSÑ"  
+      DB_PASSWORD: "example"  
     ports:
       - "8000:8000"  # Exponer el puerto 8000 del contenedor al host
     restart: always
@@ -22,18 +22,17 @@ services:
       exec uvicorn main:app --host 0.0.0.0 --port 8000
       "
 
- mysql:
-    image: mysql:latest
+  mysql:
+    image: mysql
+    restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: YACAIMOSÑ  # Contraseña del usuario root
+      MYSQL_ROOT_PASSWORD: example
       MYSQL_DATABASE: bd_bussiness_app   # Nombre de la base de datos a crear
     ports:
       - "10500:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql  # Volumen persistente para los datos de MySQL
+    #volumes:
+     # - mysql_data:/var/lib/mysql  # Volumen persistente para los datos de MySQL
     restart: always
-    #command: --default-authentication-plugin=mysql_native_password
-
  # phpmyadmin:
     #image: phpmyadmin:latest
     #ports:
@@ -42,6 +41,6 @@ services:
       #PMA_HOST: mysql
      # MYSQL_ROOT_PASSWORD: pipipiG5UNT
     #restart: always
-
 volumes:
   mysql_data:  # Definir el volumen persistente
+
