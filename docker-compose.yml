@@ -25,7 +25,7 @@ services:
   mysql:
     image: mysql:latest
     environment:
-      MYSQL_ROOT_PASSWORD: UNT
+      MYSQL_ROOT_USER: UNT
       MYSQL_ROOT_PASSWORD: pipipiG5UNT
       MYSQL_DATABASE: bd_bussiness_app
     ports:
