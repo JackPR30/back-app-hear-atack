@@ -5,7 +5,7 @@ services:
       - mysql
     environment:
       DB_HOST: mysql
-      DB_PORT: 3306
+      DB_PORT: 10500
       DB_DATABASE: bd_bussiness_app
       DB_USERNAME: root
       DB_PASSWORD: root
