@@ -25,9 +25,10 @@ services:
   mysql:
     image: mysql:latest
     environment:
-      MYSQL_ROOT_USER: UNT
-      MYSQL_ROOT_PASSWORD: pipipiG5UNT
-      MYSQL_DATABASE: bd_bussiness_app
+      MYSQL_ROOT_PASSWORD: pipipiG5UNT  # Contraseña del usuario root
+      MYSQL_DATABASE: bd_bussiness_app  # Base de datos inicial
+      MYSQL_USER: UNT                   # Nuevo usuario a crear
+      MYSQL_PASSWORD: pipipiG5UNT       # Contraseña del nuevo usuario
     ports:
       - "3306:3306"
     volumes:
