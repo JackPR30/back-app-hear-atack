@@ -25,7 +25,7 @@ services:
   mysql:
     image: mysql:latest
     environment:
-      MYSQL_ROOT_PASSWORD: root  # Contraseña del usuario root
+      MYSQL_ROOT_PASSWORD: YACAIMOSÑ  # Contraseña del usuario root
       MYSQL_DATABASE: bd_bussiness_app                 # Nuevo usuario a crear
     ports:
       - "10500:3306"
