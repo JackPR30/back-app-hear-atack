@@ -7,7 +7,7 @@ services:
       DB_HOST: mysql
       DB_PORT: 3306
       DB_DATABASE: bd_bussiness_app
-      DB_USERNAME: root
+      DB_USERNAME: UNT
       DB_PASSWORD: pipipiG5UNT
     ports:
       - "8000:8000"  # Exponer el puerto 8000 del contenedor al host
@@ -25,6 +25,7 @@ services:
   mysql:
     image: mysql:latest
     environment:
+      MYSQL_ROOT_PASSWORD: UNT
       MYSQL_ROOT_PASSWORD: pipipiG5UNT
       MYSQL_DATABASE: bd_bussiness_app
     ports:
