@@ -8,7 +8,7 @@ services:
       DB_PORT: 10500
       DB_DATABASE: bd_bussiness_app
       DB_USERNAME: root
-      DB_PASSWORD: root
+      DB_PASSWORD: YACAIMOSÑ
     ports:
       - "8000:8000"  # Exponer el puerto 8000 del contenedor al host
     restart: always
