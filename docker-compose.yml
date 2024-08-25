@@ -32,7 +32,6 @@ services:
       - "10500:3306"
     #volumes:
      # - mysql_data:/var/lib/mysql  # Volumen persistente para los datos de MySQL
-    restart: always
  # phpmyadmin:
     #image: phpmyadmin:latest
     #ports:
