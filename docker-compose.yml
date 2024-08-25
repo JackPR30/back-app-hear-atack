@@ -33,14 +33,14 @@ services:
       - mysql_data:/var/lib/mysql  # Añadir volumen persistente para los datos de MySQL
     restart: always
 
-  phpmyadmin:
-    image: phpmyadmin:latest
-    ports:
-      - "9001:80"
-    environment:
-      PMA_HOST: mysql
-      MYSQL_ROOT_PASSWORD: pipipiG5UNT
-    restart: always
+ # phpmyadmin:
+    #image: phpmyadmin:latest
+    #ports:
+      #- "9001:80"
+    #environment:
+      #PMA_HOST: mysql
+     # MYSQL_ROOT_PASSWORD: pipipiG5UNT
+    #restart: always
 
 volumes:
   mysql_data:  # Definir el volumen persistente
