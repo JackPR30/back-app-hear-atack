@@ -20,6 +20,7 @@ services:
       while ! curl -s http://localhost:8000 > /dev/null; do
         echo 'Esperando que la aplicación esté disponible...';
         sleep 5;
+      done;
       python3 /app/database.py;
       exec uvicorn main:app --host 0.0.0.0 --port 8000
       "
@@ -31,6 +32,8 @@ services:
       MYSQL_DATABASE: bd_bussiness_app
     ports:
       - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql  # Añadir volumen persistente para los datos de MySQL
     restart: always
 
   phpmyadmin:
@@ -41,3 +44,6 @@ services:
       PMA_HOST: mysql
       MYSQL_ROOT_PASSWORD: root
     restart: always
+
+volumes:
+  mysql_data:  # Definir el volumen persistente
