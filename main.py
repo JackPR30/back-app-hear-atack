@@ -443,7 +443,7 @@ if __name__ == "__main__":
     import uvicorn
     uvicorn.run(
         host="0.0.0.0",
-        port=443,
-        ssl_keyfile="key.pem",
-        ssl_certfile="cert.pem"
+        port=8000,
+        #ssl_keyfile="key.pem",
+        #ssl_certfile="cert.pem"
     )
