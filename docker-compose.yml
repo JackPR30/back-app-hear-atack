@@ -8,7 +8,7 @@ services:
       DB_PORT: 3306
       DB_DATABASE: bd_bussiness_app
       DB_USERNAME: UNT
-      DB_PASSWORD: pipipiG5UNT
+      DB_PASSWORD: lcsmr
     ports:
       - "8000:8000"  # Exponer el puerto 8000 del contenedor al host
     restart: always
@@ -26,9 +26,8 @@ services:
     image: mysql:latest
     environment:
       MYSQL_ROOT_PASSWORD: pipipiG5UNT  # Contraseña del usuario root
-      MYSQL_DATABASE: bd_bussiness_app  # Base de datos inicial
-      MYSQL_USER: UNT                   # Nuevo usuario a crear
-      MYSQL_PASSWORD: pipipiG5UNT       # Contraseña del nuevo usuario
+      MYSQL_DATABASE: bd_bussiness_app                 # Nuevo usuario a crear
+      MYSQL_PASSWORD: lcsmr       # Contraseña del nuevo usuario
     ports:
       - "3306:3306"
     volumes:
