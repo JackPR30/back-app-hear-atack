@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     build: ./  # Construye la imagen usando el Dockerfile en el directorio actual
@@ -20,7 +18,6 @@ services:
       while ! curl -s http://localhost:8000 > /dev/null; do
         echo 'Esperando que la aplicación esté disponible...';
         sleep 5;
-      done;
       python3 /app/database.py;
       exec uvicorn main:app --host 0.0.0.0 --port 8000
       "
