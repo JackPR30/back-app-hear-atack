@@ -22,7 +22,6 @@ services:
       exec uvicorn main:app --host 0.0.0.0 --port 8000
       "
 
-services:
   mysql:
     image: mysql:latest
     environment:
