@@ -40,6 +40,6 @@ services:
       #PMA_HOST: mysql
      # MYSQL_ROOT_PASSWORD: pipipiG5UNT
     #restart: always
-volumes:
-  mysql_data:  # Definir el volumen persistente
+#volumes:
+  #mysql_data:  # Definir el volumen persistente
 
