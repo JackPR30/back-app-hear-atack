@@ -17,8 +17,8 @@ COPY . .
 RUN python ml.py
 
 # Exponer el puerto 8000
-EXPOSE 8000
+EXPOSE 443
 
 # Comando para ejecutar la aplicación con uvicorn
 #CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--ssl-keyfile", "/app/certificates/key.pem", "--ssl-certfile", "/app/certificates/cert.pem"]
+CMD ["nohup","uvicorn", "main:app", "--host", "0.0.0.0", "--port", "443", "--ssl-keyfile", "/app/certificates/key.pem", "--ssl-certfile", "/app/certificates/cert.pem"]
