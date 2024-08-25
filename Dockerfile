@@ -12,6 +12,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copiar todo el código de la API al contenedor
 COPY . .
+COPY ../key.pem /app/key.pem
+COPY ../cert.pem /app/cert.pem
 
 # Ejecutar el script de Machine Learning al inicio
 RUN python ml.py
