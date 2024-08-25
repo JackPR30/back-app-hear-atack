@@ -10,7 +10,7 @@ services:
       DB_USERNAME: root
       DB_PASSWORD: "example"  
     ports:
-      - "8000:8000"  # Exponer el puerto 8000 del contenedor al host
+      - "443:443"  # Exponer el puerto 8000 del contenedor al host
     restart: always
     command: >
       /bin/bash -c "
