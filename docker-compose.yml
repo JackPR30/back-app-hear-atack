@@ -23,7 +23,7 @@ services:
     networks:
       mynetwork:
         aliases:
-          - tu-dominio.com
+          - analytics.heartbot.devjs.dev
 
   mysql:
     image: mysql
