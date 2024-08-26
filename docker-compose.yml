@@ -19,7 +19,7 @@ services:
         echo 'Esperando que la aplicación esté disponible...';
         sleep 5;
       python3 /app/database.py;
-      exec uvicorn main:app --host 0.0.0.0 --port 8000 --ssl-keyfile=/app/certificates/key.pem --ssl-certfile=/app/certificates/cert.pem
+      exec uvicorn main:app --host 0.0.0.0 --port 8000 
 
       "
     networks:
