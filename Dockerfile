@@ -21,4 +21,4 @@ EXPOSE 8000
 
 # Comando para ejecutar la aplicación con uvicorn
 #CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
-CMD ["nohup","uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--ssl-keyfile", "/app/certificates/key.pem", "--ssl-certfile", "/app/certificates/cert.pem"]
+CMD ["nohup","uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--ssl-keyfile", "/app/key.pem", "--ssl-certfile", "/app/cert.pem"]
