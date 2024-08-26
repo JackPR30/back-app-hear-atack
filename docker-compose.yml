@@ -1,6 +1,6 @@
 services:
   app:
-    build: ./  # Construye la imagen usando el Dockerfile en el directorio actual
+    build: ./
     depends_on:
       - mysql
     environment:
@@ -8,38 +8,34 @@ services:
       DB_PORT: 10500
       DB_DATABASE: bd_bussiness_app
       DB_USERNAME: root
-      DB_PASSWORD: "example"  
+      DB_PASSWORD: "example"
     ports:
-      - "8000:8000"  # Exponer el puerto 8000 del contenedor al host
+      - "8000:8000"
     restart: always
     command: >
       /bin/bash -c "
-      # Espera a que la aplicación esté completamente cargada
       while ! curl -s http://localhost:8000 > /dev/null; do
         echo 'Esperando que la aplicación esté disponible...';
         sleep 5;
       python3 /app/database.py;
       exec uvicorn main:app --host 0.0.0.0 --port 8000
       "
+    networks:
+      mynetwork:
+        aliases:
+          - tu-dominio.com
 
   mysql:
     image: mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: example
-      MYSQL_DATABASE: bd_bussiness_app   # Nombre de la base de datos a crear
+      MYSQL_DATABASE: bd_bussiness_app
     ports:
       - "10500:3306"
-    #volumes:
-     # - mysql_data:/var/lib/mysql  # Volumen persistente para los datos de MySQL
- # phpmyadmin:
-    #image: phpmyadmin:latest
-    #ports:
-      #- "9001:80"
-    #environment:
-      #PMA_HOST: mysql
-     # MYSQL_ROOT_PASSWORD: pipipiG5UNT
-    #restart: always
-#volumes:
-  #mysql_data:  # Definir el volumen persistente
+    networks:
+      mynetwork:
 
+networks:
+  mynetwork:
+    driver: bridge
