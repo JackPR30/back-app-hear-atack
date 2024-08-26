@@ -12,16 +12,7 @@ services:
     ports:
       - "443:443"  # Exponer el puerto 8000 del contenedor al host
     restart: always
-    command: >
-      /bin/bash -c "
-      # Espera a que la aplicación esté completamente cargada
-      while ! curl -s http://localhost:8000 > /dev/null; do
-        echo 'Esperando que la aplicación esté disponible...';
-        sleep 5;
-      python3 /app/database.py;
-      nohup uvicorn main:app --host 0.0.0.0 --port 443 --ssl-keyfile=key.pem --ssl-certfile=cert.pem
 
-      "
     networks:
       mynetwork:
         #aliases:
