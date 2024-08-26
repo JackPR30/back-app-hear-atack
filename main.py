@@ -444,6 +444,6 @@ if __name__ == "__main__":
     uvicorn.run(
         host="0.0.0.0",
         port=8000,
-        #ssl_keyfile="key.pem",
-        #ssl_certfile="cert.pem"
+        ssl_keyfile="key.pem",
+        ssl_certfile="cert.pem"
     )
