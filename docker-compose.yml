@@ -23,8 +23,8 @@ services:
       "
     networks:
       mynetwork:
-        aliases:
-          - analytics.heartbot.devjs.dev
+        #aliases:
+          #- analytics.heartbot.devjs.dev
 
   mysql:
     image: mysql
